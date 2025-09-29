@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отчеты - Основные настройки</title>
     <style>
+        /* Ваши существующие стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -219,6 +220,19 @@
             background: linear-gradient(90deg, transparent 0%, #bdc3c7 50%, transparent 100%);
             margin: 25px 0;
         }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #3498db;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -226,11 +240,14 @@
         <div class="header">
             <h1>Основные Менеджеры Источники Кампании Отчеты Технические</h1>
             <div class="subtitle">Панель управления отчетами и настройками</div>
+            <div class="status" id="lastUpdated">Загрузка данных...</div>
         </div>
 
         <div class="content">
+            <div class="loading" id="loading">Загрузка данных с сервера...</div>
+
             <!-- Фактические данные -->
-            <div class="section">
+            <div class="section" id="actualDataSection" style="display: none;">
                 <div class="section-title">Фактические данные</div>
                 <div class="file-input">
                     <span class="file-label">Файл:</span>
@@ -251,7 +268,7 @@
             <div class="divider"></div>
 
             <!-- Бизнес-план -->
-            <div class="section">
+            <div class="section" id="businessPlanSection" style="display: none;">
                 <div class="section-title">Бизнес-план</div>
                 <div class="file-input">
                     <span class="file-label">Файл:</span>
@@ -272,24 +289,24 @@
             <div class="divider"></div>
 
             <!-- Параметры дата -->
-            <div class="section">
+            <div class="section" id="parametersSection" style="display: none;">
                 <div class="section-title">Параметры дата</div>
                 <div class="params-grid">
                     <div class="param-group">
                         <label class="param-label">Отчетная дата:</label>
-                        <input type="text" class="param-input" value="29-09-2025">
+                        <input type="text" class="param-input" id="reportDate" value="29-09-2025">
                     </div>
                     <div class="param-group">
                         <label class="param-label">Периодичность:</label>
-                        <input type="text" class="param-input" value="месяц">
+                        <input type="text" class="param-input" id="frequency" value="месяц">
                     </div>
                     <div class="param-group">
                         <label class="param-label">Периодов:</label>
-                        <input type="text" class="param-input" value="12">
+                        <input type="text" class="param-input" id="periods" value="12">
                     </div>
                     <div class="param-group">
                         <label class="param-label">Папка для отчета:</label>
-                        <input type="text" class="param-input" value="">
+                        <input type="text" class="param-input" id="reportFolder" value="">
                     </div>
                 </div>
                 <div class="checkbox-group">
@@ -298,7 +315,7 @@
                 </div>
                 <div class="param-group" style="margin-top: 15px;">
                     <label class="param-label">Период конверсии, дней:</label>
-                        <input type="text" class="param-input" value="30">
+                    <input type="text" class="param-input" id="conversionPeriod" value="30">
                 </div>
             </div>
 
@@ -308,62 +325,135 @@
             <div class="section">
                 <div class="section-title">Построить душ</div>
                 <div class="actions">
-                    <button class="btn btn-secondary">Загрузить настройки</button>
-                    <button class="btn btn-primary">Сохранить настройки</button>
+                    <button class="btn btn-secondary" onclick="loadSettings()">Загрузить настройки</button>
+                    <button class="btn btn-primary" onclick="saveSettings()">Сохранить настройки</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Функция для обработки выбора файла
-            function setupFileInput(fileInputId, displayElementId) {
-                const fileInput = document.getElementById(fileInputId);
-                const displayElement = document.getElementById(displayElementId);
+        // Базовый URL для API (на Render будет автоматически определен)
+        const API_BASE_URL = window.location.origin;
 
-                fileInput.addEventListener('change', function(e) {
-                    if (this.files && this.files[0]) {
-                        const fileName = this.files[0].name;
-                        displayElement.textContent = `✅ ${fileName}`;
-                        displayElement.style.background = '#e8f4fc';
-                        displayElement.style.borderColor = '#27ae60';
-                        displayElement.style.color = '#2c3e50';
-                        displayElement.style.fontWeight = '500';
-                    }
-                });
-
-                // Клик по display element также открывает диалог выбора файла
-                displayElement.addEventListener('click', function() {
-                    fileInput.click();
-                });
+        // Загрузка данных с сервера
+        async function loadDataFromServer() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/data`);
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки данных');
+                }
+                const data = await response.json();
+                updateUI(data);
+            } catch (error) {
+                console.error('Ошибка:', error);
+                document.getElementById('loading').innerHTML = 
+                    '❌ Ошибка загрузки данных. Проверьте подключение к серверу.';
             }
+        }
 
-            // Настройка всех полей выбора файлов
+        // Обновление интерфейса данными с сервера
+        function updateUI(data) {
+            // Скрываем loading и показываем контент
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('actualDataSection').style.display = 'block';
+            document.getElementById('businessPlanSection').style.display = 'block';
+            document.getElementById('parametersSection').style.display = 'block';
+
+            // Обновляем фактические данные
+            document.getElementById('actualFileDisplay').textContent = 
+                `📊 ${data.actual_data.file_name}`;
+            document.getElementById('actualSheetDisplay').textContent = 
+                `📋 ${data.actual_data.sheet_name}`;
+
+            // Обновляем бизнес-план
+            document.getElementById('planFileDisplay').textContent = 
+                `📊 ${data.business_plan.file_name}`;
+            document.getElementById('planSheetDisplay').textContent = 
+                `📋 ${data.business_plan.sheet_name}`;
+
+            // Обновляем параметры
+            document.getElementById('reportDate').value = data.parameters.report_date;
+            document.getElementById('frequency').value = data.parameters.frequency;
+            document.getElementById('periods').value = data.parameters.periods;
+            document.getElementById('reportFolder').value = data.parameters.report_folder;
+            document.getElementById('conversionPeriod').value = data.parameters.conversion_period;
+            document.getElementById('forecast').checked = data.parameters.include_forecast;
+
+            // Обновляем статус
+            document.getElementById('lastUpdated').textContent = 
+                `Данные обновлены: ${data.last_updated}`;
+        }
+
+        // Загрузка настроек
+        async function loadSettings() {
+            await loadDataFromServer();
+            alert('Настройки загружены с сервера!');
+        }
+
+        // Сохранение настроек
+        async function saveSettings() {
+            try {
+                const settings = {
+                    report_date: document.getElementById('reportDate').value,
+                    frequency: document.getElementById('frequency').value,
+                    periods: parseInt(document.getElementById('periods').value),
+                    report_folder: document.getElementById('reportFolder').value,
+                    conversion_period: parseInt(document.getElementById('conversionPeriod').value),
+                    include_forecast: document.getElementById('forecast').checked
+                };
+
+                // Здесь можно отправить данные на сервер
+                const response = await fetch(`${API_BASE_URL}/api/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(settings)
+                });
+
+                if (response.ok) {
+                    alert('Настройки успешно сохранены!');
+                } else {
+                    alert('Ошибка сохранения настроек');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка при сохранении настроек');
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDataFromServer();
+            
+            // Настройка обработчиков для выбора файлов
             setupFileInput('actualFile', 'actualFileDisplay');
             setupFileInput('actualSheet', 'actualSheetDisplay');
             setupFileInput('planFile', 'planFileDisplay');
             setupFileInput('planSheet', 'planSheetDisplay');
-
-            // Инициализация отображения
-            document.getElementById('actualFileDisplay').textContent = '📁 Выбрать файл';
-            document.getElementById('actualSheetDisplay').textContent = '📁 Выбрать файл';
-            document.getElementById('planFileDisplay').textContent = '📁 Выбрать файл';
-            document.getElementById('planSheetDisplay').textContent = '📁 Выбрать файл';
-
-            // Обработка кнопок
-            const buttons = document.querySelectorAll('.btn');
-            
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (this.classList.contains('btn-primary')) {
-                        alert('Настройки успешно сохранены!');
-                    } else {
-                        alert('Загрузка настроек...');
-                    }
-                });
-            });
         });
+
+        // Функция для обработки выбора файла
+        function setupFileInput(fileInputId, displayElementId) {
+            const fileInput = document.getElementById(fileInputId);
+            const displayElement = document.getElementById(displayElementId);
+
+            fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const fileName = this.files[0].name;
+                    displayElement.textContent = `✅ ${fileName}`;
+                    displayElement.style.background = '#e8f4fc';
+                    displayElement.style.borderColor = '#27ae60';
+                    displayElement.style.color = '#2c3e50';
+                    displayElement.style.fontWeight = '500';
+                }
+            });
+
+            displayElement.addEventListener('click', function() {
+                fileInput.click();
+            });
+        }
     </script>
 </body>
 </html>
