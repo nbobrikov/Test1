@@ -1,16 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Frontend</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчеты - Основные настройки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px 30px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .file-label {
+            font-weight: 500;
+            color: #34495e;
+            min-width: 60px;
+        }
+
+        .file-path {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            background: #f8f9fa;
+            color: #7f8c8d;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .param-group {
+            margin-bottom: 15px;
+        }
+
+        .param-label {
+            display: block;
+            font-weight: 500;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        .param-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .param-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #34495e;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #34495e;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #dfe6e9;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #bdc3c7 50%, transparent 100%);
+            margin: 25px 0;
+        }
+    </style>
 </head>
 <body>
-  <h1>Hello from Render 🚀</h1>
-  <button id="btn">Get Data from Backend</button>
-  <p id="output"></p>
+    <div class="container">
+        <div class="header">
+            <h1>Основные Менеджеры Источники Кампании Отчеты Технические</h1>
+            <div class="subtitle">Панель управления отчетами и настройками</div>
+        </div>
 
-  <script src="script.js"></script>
+        <div class="content">
+            <!-- Фактические данные -->
+            <div class="section">
+                <div class="section-title">Фактические данные</div>
+                <div class="file-input">
+                    <span class="file-label">Файл:</span>
+                    <div class="file-path">Не выбран</div>
+                </div>
+                <div class="file-input">
+                    <span class="file-label">Вложе Лист:</span>
+                    <div class="file-path">Не выбран</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Бизнес-план -->
+            <div class="section">
+                <div class="section-title">Бизнес-план</div>
+                <div class="file-input">
+                    <span class="file-label">Файл:</span>
+                    <div class="file-path">Не выбран</div>
+                </div>
+                <div class="file-input">
+                    <span class="file-label">Вложе Лист:</span>
+                    <div class="file-path">Не выбран</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Параметры дата -->
+            <div class="section">
+                <div class="section-title">Параметры дата</div>
+                <div class="params-grid">
+                    <div class="param-group">
+                        <label class="param-label">Отчетная дата:</label>
+                        <input type="text" class="param-input" value="29-09-2025">
+                    </div>
+                    <div class="param-group">
+                        <label class="param-label">Периодичность:</label>
+                        <input type="text" class="param-input" value="месяц">
+                    </div>
+                    <div class="param-group">
+                        <label class="param-label">Периодов:</label>
+                        <input type="text" class="param-input" value="12">
+                    </div>
+                    <div class="param-group">
+                        <label class="param-label">Папка для отчета:</label>
+                        <input type="text" class="param-input" value="">
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox" id="forecast">
+                    <label class="checkbox-label" for="forecast">Вложе строгить прогноз</label>
+                </div>
+                <div class="param-group" style="margin-top: 15px;">
+                    <label class="param-label">Период конверсии, дней:</label>
+                    <input type="text" class="param-input" value="30">
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Построить душ -->
+            <div class="section">
+                <div class="section-title">Построить душ</div>
+                <div class="actions">
+                    <button class="btn btn-secondary">Загрузить настройки</button>
+                    <button class="btn btn-primary">Сохранить настройки</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Простой скрипт для добавления интерактивности
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('btn-primary')) {
+                        alert('Настройки успешно сохранены!');
+                    } else {
+                        alert('Загрузка настроек...');
+                    }
+                });
+            });
+
+            // Добавляем возможность выбора файлов
+            const filePaths = document.querySelectorAll('.file-path');
+            filePaths.forEach(path => {
+                path.addEventListener('click', function() {
+                    this.style.background = '#e8f4fc';
+                    this.style.borderColor = '#3498db';
+                    this.textContent = 'Файл выбран...';
+                });
+            });
+        });
+    </script>
 </body>
 </html>
