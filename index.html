@@ -75,13 +75,58 @@
             min-width: 60px;
         }
 
-        .file-path {
+        .file-field {
+            flex: 1;
+            position: relative;
+        }
+
+        .file-input-real {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            background: #f8f9fa;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-input-real:hover {
+            background: #e8f4fc;
+            border-color: #3498db;
+        }
+
+        .file-input-real::after {
+            content: '📁 Выбрать файл';
+            color: #3498db;
+            font-weight: 500;
+        }
+
+        .file-input-hidden {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-name {
             flex: 1;
             padding: 8px 12px;
             border: 1px solid #bdc3c7;
             border-radius: 6px;
             background: #f8f9fa;
             color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .file-name.has-file {
+            background: #e8f4fc;
+            border-color: #3498db;
+            color: #2c3e50;
+            font-weight: 500;
         }
 
         .params-grid {
@@ -189,11 +234,17 @@
                 <div class="section-title">Фактические данные</div>
                 <div class="file-input">
                     <span class="file-label">Файл:</span>
-                    <div class="file-path">Не выбран</div>
+                    <div class="file-field">
+                        <div class="file-input-real" id="actualFileDisplay"></div>
+                        <input type="file" class="file-input-hidden" id="actualFile" accept=".xlsx,.xls,.csv,.txt">
+                    </div>
                 </div>
                 <div class="file-input">
                     <span class="file-label">Вложе Лист:</span>
-                    <div class="file-path">Не выбран</div>
+                    <div class="file-field">
+                        <div class="file-input-real" id="actualSheetDisplay"></div>
+                        <input type="file" class="file-input-hidden" id="actualSheet" accept=".xlsx,.xls,.csv,.txt">
+                    </div>
                 </div>
             </div>
 
@@ -204,11 +255,17 @@
                 <div class="section-title">Бизнес-план</div>
                 <div class="file-input">
                     <span class="file-label">Файл:</span>
-                    <div class="file-path">Не выбран</div>
+                    <div class="file-field">
+                        <div class="file-input-real" id="planFileDisplay"></div>
+                        <input type="file" class="file-input-hidden" id="planFile" accept=".xlsx,.xls,.csv,.txt">
+                    </div>
                 </div>
                 <div class="file-input">
                     <span class="file-label">Вложе Лист:</span>
-                    <div class="file-path">Не выбран</div>
+                    <div class="file-field">
+                        <div class="file-input-real" id="planSheetDisplay"></div>
+                        <input type="file" class="file-input-hidden" id="planSheet" accept=".xlsx,.xls,.csv,.txt">
+                    </div>
                 </div>
             </div>
 
@@ -241,7 +298,7 @@
                 </div>
                 <div class="param-group" style="margin-top: 15px;">
                     <label class="param-label">Период конверсии, дней:</label>
-                    <input type="text" class="param-input" value="30">
+                        <input type="text" class="param-input" value="30">
                 </div>
             </div>
 
@@ -259,8 +316,42 @@
     </div>
 
     <script>
-        // Простой скрипт для добавления интерактивности
         document.addEventListener('DOMContentLoaded', function() {
+            // Функция для обработки выбора файла
+            function setupFileInput(fileInputId, displayElementId) {
+                const fileInput = document.getElementById(fileInputId);
+                const displayElement = document.getElementById(displayElementId);
+
+                fileInput.addEventListener('change', function(e) {
+                    if (this.files && this.files[0]) {
+                        const fileName = this.files[0].name;
+                        displayElement.textContent = `✅ ${fileName}`;
+                        displayElement.style.background = '#e8f4fc';
+                        displayElement.style.borderColor = '#27ae60';
+                        displayElement.style.color = '#2c3e50';
+                        displayElement.style.fontWeight = '500';
+                    }
+                });
+
+                // Клик по display element также открывает диалог выбора файла
+                displayElement.addEventListener('click', function() {
+                    fileInput.click();
+                });
+            }
+
+            // Настройка всех полей выбора файлов
+            setupFileInput('actualFile', 'actualFileDisplay');
+            setupFileInput('actualSheet', 'actualSheetDisplay');
+            setupFileInput('planFile', 'planFileDisplay');
+            setupFileInput('planSheet', 'planSheetDisplay');
+
+            // Инициализация отображения
+            document.getElementById('actualFileDisplay').textContent = '📁 Выбрать файл';
+            document.getElementById('actualSheetDisplay').textContent = '📁 Выбрать файл';
+            document.getElementById('planFileDisplay').textContent = '📁 Выбрать файл';
+            document.getElementById('planSheetDisplay').textContent = '📁 Выбрать файл';
+
+            // Обработка кнопок
             const buttons = document.querySelectorAll('.btn');
             
             buttons.forEach(button => {
@@ -270,16 +361,6 @@
                     } else {
                         alert('Загрузка настроек...');
                     }
-                });
-            });
-
-            // Добавляем возможность выбора файлов
-            const filePaths = document.querySelectorAll('.file-path');
-            filePaths.forEach(path => {
-                path.addEventListener('click', function() {
-                    this.style.background = '#e8f4fc';
-                    this.style.borderColor = '#3498db';
-                    this.textContent = 'Файл выбран...';
                 });
             });
         });
